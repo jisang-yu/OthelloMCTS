@@ -74,9 +74,9 @@ class Othello:
 
     def computeScore(self):
         if self.black_count == self.white_count:
-            return 0
+            return 0.5
 
-        return 1 if self.black_count > self.white_count else -1
+        return 1 if self.black_count > self.white_count else 0
 
     def __canFlip(self, x, y, dx, dy) -> bool:
         '''
