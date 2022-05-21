@@ -2,8 +2,9 @@ import copy
 from collections import namedtuple
 from random import choice
 from MCTS import MCTS, Node
+import typing_extensions, typing
 
-class Othello:
+class Othello(Node):
     def __init__(self, n=8):
         # O indicates black and X indicates white
         # Othello board is an nxn board where n is even and n > 2
@@ -21,24 +22,27 @@ class Othello:
         self.current_player = "O"
 
     def find_children(self):
-        self.is_leaf = True
-        if not self.validMoves:
-            self.is_leaf = False
-
-        if self.is_leaf: # If the game is finished then no moves can be made
+        if self.is_terminal(): # If the game is finished then no moves can be made
             return set()
 
         # Otherwise, you can make a move in each of the empty spots
-        return {self.makeMove(i) for i, value in enumerate(self.tup) if value is None}
+        return {self.makeMove(i) for i, value in enumerate(self.validMoves()) if value is None}
 
     def find_random_child(self):
-        if board.terminal:
-            return None  # If the game is finished then no moves can be made
-        empty_spots = [i for i, value in enumerate(board.tup) if value is None]
-        return self.makeMove(choice(empty_spots))
+        if not self.validMoves:
+            return None
+
+        random_child = choice(self.validMoves())
+        x, y = random_child[0], random_child[1]
+        return self.makeMove(x, y)
+
+    def is_terminal(self):
+        if self.validMoves():
+            return False
+        return True
 
 
-    def validMoves(self) -> list[tuple[int]]:
+    def validMoves(self):
         """
         Looking at the current board and player, find the next valid moves
         :return: list[tuple[int]], list of valid moves, where move is (x,y)
@@ -78,6 +82,7 @@ class Othello:
         opponent = "O" if self.current_player == "X" else "X"
         player_is_black = True if self.current_player == "O" else False
 
+        new_board.board = [list(i) for i in new_board.board]
         new_board.board[x][y] = self.current_player
         if player_is_black:
             self.black_count += 1
@@ -164,6 +169,7 @@ class Othello:
         return res
 
     def __hash__(self):
+        self.board = tuple(tuple(i) for i in self.board) # list is not hashable, change to tuples
         return hash(self.board)
 
     def __eq__(node1, node2):

@@ -24,7 +24,7 @@ class Node(ABC):
         return True
 
     @abstractmethod
-    def reward(self):
+    def computeScore(self):
         "Assumes `self` is terminal node. 1=win, -1=loss, 0=tie, etc"
         return 0
 
@@ -70,6 +70,7 @@ class MCTS:
                 return float("-inf") # avoid unseen moves
             return self.Q[n] / self.N[n]
 
+        print("Children Nodes", self.children[node])
         return max(self.children[node], key=score)
 
     def do_rollout(self, node):
@@ -97,7 +98,10 @@ class MCTS:
 
         while True:
             path.append(node)
-            if node not in self.children or not self.children[node]:
+            print("path", path)
+            print("node (class othello.Othello)\n", node)
+            print("children", self.children)
+            if node not in self.children or not self.children[node]: #if node not in self.children or not self.children[node]:
                 # node is either unexplored or terminal(leaf)
                 return path
 
@@ -131,7 +135,7 @@ class MCTS:
         invert_reward = True
         while True:
             if node.is_terminal():
-                reward = node.reward()
+                reward = node.computeScore()
                 return -reward if invert_reward else reward
             node = node.find_random_child()
             invert_reward = not invert_reward

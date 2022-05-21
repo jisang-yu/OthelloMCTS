@@ -1,6 +1,10 @@
 from othello import Othello
+from collections import namedtuple
+from random import choice
+from MCTS import MCTS, Node
 
 if __name__ == "__main__":
+    tree = MCTS()
     board = Othello(4)
 
     while True:
@@ -21,6 +25,14 @@ if __name__ == "__main__":
         x, y = int(move[0]), int(move[1])
 
         board = board.makeMove(x, y)
+
+        # Here, we train as we go, doing fifty rollouts each turn.
+        for _ in range(50):
+            tree.do_rollout(board)
+        board = tree.choose(board)
+        print(board.to_pretty_string())
+        if board.terminal:
+            break
 
     res = board.computeScore()
 
