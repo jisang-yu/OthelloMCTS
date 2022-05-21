@@ -1,9 +1,9 @@
 import copy
-from collections import namedtuple
 from random import choice
 from MCTS import MCTS, Node
-import typing_extensions
-import typing
+
+WHITE = "○"
+BLACK = "●"
 
 
 class Othello(Node):
@@ -16,12 +16,12 @@ class Othello(Node):
         self.board = [["." for _ in range(n)] for _ in range(n)]
 
         # Initialize 4 middle stones
-        self.board[n//2-1][n//2-1], self.board[n//2][n//2] = "W", "W"
-        self.board[n//2][n//2-1], self.board[n//2-1][n//2] = "B", "B"
+        self.board[n//2-1][n//2-1], self.board[n//2][n//2] = WHITE, WHITE
+        self.board[n//2][n//2-1], self.board[n//2-1][n//2] = BLACK, BLACK
 
         self.black_count, self.white_count = 2, 2
 
-        self.current_player = "B"
+        self.current_player = BLACK
 
     def find_children(self):
         if self.is_terminal():  # If the game is finished then no moves can be made
@@ -79,8 +79,8 @@ class Othello(Node):
 
         new_board = copy.deepcopy(self)
 
-        opponent = "B" if self.current_player == "W" else "W"
-        player_is_black = True if self.current_player == "B" else False
+        opponent = BLACK if self.current_player == WHITE else WHITE
+        player_is_black = True if self.current_player == BLACK else False
 
         new_board.board[x][y] = self.current_player
         if player_is_black:
@@ -128,7 +128,7 @@ class Othello(Node):
             temp_x += dx
             temp_y += dy
 
-        opponent = "B" if self.current_player == "W" else "W"
+        opponent = BLACK if self.current_player == WHITE else WHITE
 
         if self.current_player not in lst:
             return False
