@@ -1,3 +1,6 @@
+import copy
+
+
 class Othello:
     def __init__(self, n=8):
         # O indicates black and X indicates white
@@ -15,7 +18,11 @@ class Othello:
 
         self.current_player = "O"
 
-    def validMoves(self) -> list[list[int]]:
+    def validMoves(self) -> list[tuple[int]]:
+        """
+        Looking at the current board and player, find the next valid moves
+        :return: list[tuple[int]], list of valid moves, where move is (x,y)
+        """
         res = []
         for check_x in range(self.n):
             for check_y in range(self.n):
@@ -32,7 +39,12 @@ class Othello:
 
         return res
 
-    def makeMove(self, x: int, y: int) -> None:
+    def makeMove(self, x: int, y: int):
+        """
+        creates a new Othello instance with the new move. If move is invalid, return None
+        :param x, y: x and y coordinate of the move to make
+        :return: new Othello instance with new move
+        """
         if not (0 <= x < self.n and 0 <= y < self.n):
             print("Error: Invalid Move")
             return
@@ -41,10 +53,12 @@ class Othello:
             print("Error: Board position already taken")
             return
 
+        new_board = copy.deepcopy(self)
+
         opponent = "O" if self.current_player == "X" else "X"
         player_is_black = True if self.current_player == "O" else False
 
-        self.board[x][y] = self.current_player
+        new_board.board[x][y] = self.current_player
         if player_is_black:
             self.black_count += 1
         else:
@@ -62,15 +76,15 @@ class Othello:
             # flip correct amount of stones in this direction
             temp_x, temp_y = x + dx, y + dy
             while 0 <= temp_x < self.n and 0 <= temp_y < self.n and self.board[temp_x][temp_y] == opponent:
-                self.board[temp_x][temp_y] = self.current_player
-                self.black_count += 1 if player_is_black else -1
-                self.white_count += -1 if player_is_black else 1
+                new_board.board[temp_x][temp_y] = self.current_player
+                new_board.black_count += 1 if player_is_black else -1
+                new_board.white_count += -1 if player_is_black else 1
                 temp_x += dx
                 temp_y += dy
 
         # reverse turn
-        self.current_player = opponent
-        return
+        new_board.current_player = opponent
+        return new_board
 
     def computeScore(self):
         if self.black_count == self.white_count:
@@ -80,6 +94,7 @@ class Othello:
 
     def __canFlip(self, x, y, dx, dy) -> bool:
         '''
+            Private Method
             Look at current position of the board and checks if we can flip stones in the direction provided
         '''
         lst = []

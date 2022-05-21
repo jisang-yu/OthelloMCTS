@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
         x, y = int(move[0]), int(move[1])
 
-        board.makeMove(x, y)
+        board = board.makeMove(x, y)
 
     res = board.computeScore()
 
