@@ -44,7 +44,7 @@ def run(mcts_agent, num_iterations):
                 break
             board = mcts_move(board, num_iterations)
 
-    winner_map = {1: "black", 0: "white"}
+    winner_map = {1: "black", 0: "white", 0.5: "tie"}
     res = board.computeScore()
     return winner_map[res] == mcts_agent
 
