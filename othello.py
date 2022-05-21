@@ -2,7 +2,9 @@ import copy
 from collections import namedtuple
 from random import choice
 from MCTS import MCTS, Node
-import typing_extensions, typing
+import typing_extensions
+import typing
+
 
 class Othello(Node):
     def __init__(self, n=8):
@@ -22,7 +24,7 @@ class Othello(Node):
         self.current_player = "O"
 
     def find_children(self):
-        if self.is_terminal(): # If the game is finished then no moves can be made
+        if self.is_terminal():  # If the game is finished then no moves can be made
             return set()
 
         # Otherwise, you can make a move in each of the empty spots
@@ -40,7 +42,6 @@ class Othello(Node):
         if self.validMoves():
             return False
         return True
-
 
     def validMoves(self):
         """
@@ -85,9 +86,9 @@ class Othello(Node):
         new_board.board = [list(i) for i in new_board.board]
         new_board.board[x][y] = self.current_player
         if player_is_black:
-            self.black_count += 1
+            new_board.black_count += 1
         else:
-            self.white_count += 1
+            new_board.white_count += 1
 
         direction = [(1, 0), (1, 1), (0, 1), (0, -1),
                      (-1, -1), (-1, 0), (1, -1), (-1, 1)]
@@ -169,7 +170,8 @@ class Othello(Node):
         return res
 
     def __hash__(self):
-        self.board = tuple(tuple(i) for i in self.board) # list is not hashable, change to tuples
+        # list is not hashable, change to tuples
+        self.board = tuple(tuple(i) for i in self.board)
         return hash(self.board)
 
     def __eq__(node1, node2):
