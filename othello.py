@@ -127,3 +127,9 @@ class Othello:
         res += f"Black: {self.black_count}, White: {self.white_count}"
 
         return res
+
+    def __hash__(self):
+        return hash(self.board)
+
+    def __eq__(node1, node2):
+        return node1.board == node2.board
