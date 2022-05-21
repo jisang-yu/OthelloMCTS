@@ -70,7 +70,6 @@ class MCTS:
                 return float("-inf") # avoid unseen moves
             return self.Q[n] / self.N[n]
 
-        print("Children Nodes", self.children[node])
         return max(self.children[node], key=score)
 
     def do_rollout(self, node):
@@ -98,9 +97,6 @@ class MCTS:
 
         while True:
             path.append(node)
-            print("path", path)
-            print("node (class othello.Othello)\n", node)
-            print("children", self.children)
             if node not in self.children or not self.children[node]: #if node not in self.children or not self.children[node]:
                 # node is either unexplored or terminal(leaf)
                 return path

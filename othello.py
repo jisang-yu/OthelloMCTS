@@ -16,27 +16,26 @@ class Othello(Node):
         self.board = [["." for _ in range(n)] for _ in range(n)]
 
         # Initialize 4 middle stones
-        self.board[n//2-1][n//2-1], self.board[n//2][n//2] = "X", "X"
-        self.board[n//2][n//2-1], self.board[n//2-1][n//2] = "O", "O"
+        self.board[n//2-1][n//2-1], self.board[n//2][n//2] = "W", "W"
+        self.board[n//2][n//2-1], self.board[n//2-1][n//2] = "B", "B"
 
         self.black_count, self.white_count = 2, 2
 
-        self.current_player = "O"
+        self.current_player = "B"
 
     def find_children(self):
         if self.is_terminal():  # If the game is finished then no moves can be made
             return set()
 
         # Otherwise, you can make a move in each of the empty spots
-        return {self.makeMove(i) for i, value in enumerate(self.validMoves()) if value is None}
+        return {self.makeMove(value[0], value[1]) for value in self.validMoves()}
 
     def find_random_child(self):
         if not self.validMoves:
             return None
 
         random_child = choice(self.validMoves())
-        x, y = random_child[0], random_child[1]
-        return self.makeMove(x, y)
+        return self.makeMove(random_child[0], random_child[1])
 
     def is_terminal(self):
         if self.validMoves():
@@ -80,10 +79,9 @@ class Othello(Node):
 
         new_board = copy.deepcopy(self)
 
-        opponent = "O" if self.current_player == "X" else "X"
-        player_is_black = True if self.current_player == "O" else False
+        opponent = "B" if self.current_player == "W" else "W"
+        player_is_black = True if self.current_player == "B" else False
 
-        new_board.board = [list(i) for i in new_board.board]
         new_board.board[x][y] = self.current_player
         if player_is_black:
             new_board.black_count += 1
@@ -130,7 +128,7 @@ class Othello(Node):
             temp_x += dx
             temp_y += dy
 
-        opponent = "O" if self.current_player == "X" else "X"
+        opponent = "B" if self.current_player == "W" else "W"
 
         if self.current_player not in lst:
             return False
@@ -171,8 +169,7 @@ class Othello(Node):
 
     def __hash__(self):
         # list is not hashable, change to tuples
-        self.board = tuple(tuple(i) for i in self.board)
-        return hash(self.board)
+        return hash(tuple(tuple(i) for i in self.board))
 
     def __eq__(node1, node2):
         return node1.board == node2.board
