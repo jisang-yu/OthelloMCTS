@@ -1,5 +1,7 @@
 import copy
-
+from collections import namedtuple
+from random import choice
+from MCTS import MCTS, Node
 
 class Othello:
     def __init__(self, n=8):
@@ -17,6 +19,24 @@ class Othello:
         self.black_count, self.white_count = 2, 2
 
         self.current_player = "O"
+
+    def find_children(self):
+        self.is_leaf = True
+        if not self.validMoves:
+            self.is_leaf = False
+
+        if self.is_leaf: # If the game is finished then no moves can be made
+            return set()
+
+        # Otherwise, you can make a move in each of the empty spots
+        return {self.makeMove(i) for i, value in enumerate(self.tup) if value is None}
+
+    def find_random_child(self):
+        if board.terminal:
+            return None  # If the game is finished then no moves can be made
+        empty_spots = [i for i, value in enumerate(board.tup) if value is None]
+        return self.makeMove(choice(empty_spots))
+
 
     def validMoves(self) -> list[tuple[int]]:
         """
