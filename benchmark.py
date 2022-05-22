@@ -2,6 +2,7 @@ from othello import Othello
 from MCTS import MCTS
 from random import choice
 from tqdm import tqdm
+from multiprocessing import Pool, cpu_count
 import numpy as np
 import matplotlib
 
@@ -10,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 TEST_AMOUNT = 100
-NUM_ITERATIONS = [5, 20, 50, 100, 200]
+NUM_ITERATIONS = [5, 10, 25, 50, 75, 100]
 
 
 def mcts_move(board, num_iterations):
@@ -49,7 +50,7 @@ def pseudorandom_move(board):
     return board.makeMove(psdrdm_move[0], psdrdm_move[1])
 
 
-def run(mcts_agent, num_iterations):
+def run(mcts_agent, num_iterations, player_agent):
     board = Othello(8)
     while True:
         if mcts_agent == "black":
@@ -59,12 +60,20 @@ def run(mcts_agent, num_iterations):
 
             if board.is_terminal():
                 break
-            board = random_move(board)
+
+            if player_agent == "pseudorandom":
+                board = pseudorandom_move(board)
+            elif player_agent == "random":
+                board = random_move(board)
 
         elif mcts_agent == "white":
             if board.is_terminal():
                 break
-            board = random_move(board)
+
+            if player_agent == "pseudorandom":
+                board = pseudorandom_move(board)
+            elif player_agent == "random":
+                board = random_move(board)
 
             if board.is_terminal():
                 break
@@ -75,6 +84,13 @@ def run(mcts_agent, num_iterations):
     return winner_map[res] == mcts_agent
 
 
+def job(color, num_iterations, player):
+    win_count = 0
+    for _ in tqdm(range(TEST_AMOUNT)):
+        win_count += run(color, num_iterations, player)
+    
+    return win_count / TEST_AMOUNT
+
 if __name__ == "__main__":
 
     results = {}
@@ -82,22 +98,16 @@ if __name__ == "__main__":
     color_map = {"black_random": '#26580f', 'black_pseudorandom': "#378805",
                  'white_random': '#072f5f', 'white_pseudorandom': '#1261a0'}
 
+
+    pool = Pool(processes=4)
+
     for color in ["black", "white"]:
         for player in ["random", "pseudorandom"]:
-            line = []
-            for num_iterations in NUM_ITERATIONS:
-                win_count = 0
-                print(
-                    f'Simulating MCTS agent as {color} with {num_iterations} iterations against {player} agent')
-                for _ in tqdm(range(TEST_AMOUNT)):
-                    win_count += run(color, num_iterations)
-
-                results[(color, num_iterations)] = results
-                line.append(win_count / TEST_AMOUNT)
-                print()
-
+            print(color, player)
+            res = pool.starmap(job, [(color, num_iterations, player) for num_iterations in NUM_ITERATIONS])
+            print(res)
             plt.plot(
-                NUM_ITERATIONS, line, label=f"mcts-agent as {color} against {player}", c=color_map[f'{color}_{player}'])
+                NUM_ITERATIONS, res, label=f"mcts-agent as {color} against {player}", c=color_map[f'{color}_{player}'])
 
     plt.ylabel("Win Rate(%)")
     plt.xlabel("Num Iterations")
