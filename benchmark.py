@@ -3,6 +3,9 @@ from MCTS import MCTS
 from random import choice
 from tqdm import tqdm
 import numpy as np
+import matplotlib
+
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
 
 
