@@ -12,7 +12,7 @@ matplotlib.use("agg")
 import matplotlib.pyplot as plt
 
 
-TEST_AMOUNT = 10
+TEST_AMOUNT = 300
 NUM_ITERATIONS = [40, 80, 120, 160, 200]
 
 
