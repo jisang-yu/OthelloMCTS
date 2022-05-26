@@ -1,3 +1,5 @@
+import multiprocessing
+
 from othello import Othello
 from MCTS import MCTS
 from random import choice
@@ -10,8 +12,8 @@ matplotlib.use("agg")
 import matplotlib.pyplot as plt
 
 
-TEST_AMOUNT = 100
-NUM_ITERATIONS = [5, 10, 25, 50, 75, 100]
+TEST_AMOUNT = 300
+NUM_ITERATIONS = [40, 80, 120, 160, 200]
 
 
 def mcts_move(board, num_iterations):
@@ -99,7 +101,7 @@ if __name__ == "__main__":
                  'white_random': '#072f5f', 'white_pseudorandom': '#1261a0'}
 
 
-    pool = Pool(processes=4)
+    pool = Pool(multiprocessing.cpu_count())
 
     for color in ["black", "white"]:
         for player in ["random", "pseudorandom"]:
@@ -111,6 +113,8 @@ if __name__ == "__main__":
 
     plt.ylabel("Win Rate(%)")
     plt.xlabel("Num Iterations")
+    ax = plt.gca()
+    ax.set_ylim([0.2, 1.1])
     plt.title("MCTS-Othello Benchmark")
     plt.legend()
     plt.savefig("benchmark.png")
